@@ -149,7 +149,7 @@ def add_image(name, image, database):
     image_dvectors = vectorize_image(image, boxes)
     # if profile exists in database, add image
     if database.__contains__(name):
-        database[name] += image_dvectors
+        database[name].apppend(image_dvectors)
     # if profile doesnt exist yet, create it then add image
     else:
         add_profile(name, image_dvectors, database)
