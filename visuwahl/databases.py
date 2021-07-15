@@ -1,6 +1,17 @@
 #pickling
 import pickle
-import mygrad as mg
+#import mygrad as mg
+from camera import take_picture
+#import matplotlib.pyplot as plt
+
+def file_image(path_to_image):
+    # shape-(Height, Width, Color)
+    image = io.imread(str(path_to_image))
+    if image.shape[-1] == 4:
+        # Image is RGBA, where A is alpha -> transparency
+        # Must make image RGB.
+        image = image[..., :-1]  # png -> RGB
+
 
 def get_image():
     """
@@ -21,10 +32,10 @@ def get_image():
     # Image File
     if image_type == 0:
         filename = input("What's the name of the desired image file? (Include file path and extension): ")
-        image = file_image()
+        image = file_image(filename) # file_image() will have to take in a filepath as a string and convert with pathlib to actually use the image file
     # Webcamera Sample
     elif image_type == 1:
-        image = camera_image()
+        image = take_picture()
     # Invalid Option
     else:
         print("Error: Invalid Option")  
@@ -177,6 +188,6 @@ def bound_image(image_data):
     Returns
     ------
     """
-    
+    boxes, probabilities, landmarks = model.detect(image_data)
 def vectorize_image(img, boxes):
     
