@@ -20,10 +20,10 @@ def get_image():
     image_type = int(input("Enter 0 to load an image file, Enter 1 to take a picture with your webcam: "))
     # Image File
     if image_type == 0:
-        filename = input("What's the name of the desired image file? (Include file extension): ")
+        filename = input("What's the name of the desired image file? (Include file path and extension): ")
         image = file_image()
     # Webcamera Sample
-    elif recording_type == 1:
+    elif image_type == 1:
         image = camera_image()
     # Invalid Option
     else:

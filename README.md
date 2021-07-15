@@ -36,7 +36,7 @@ You can read more about the basics of creating a Python package [here](https://w
 # Planning
 
 Create a Profile class with functionality to store face descriptors associated with a named individual.
-    __init__(name, dvectors) -> initializes profile with name and vector list
+    init(name, dvectors) -> initializes profile with name and vector list
     set_name(string) -> sets profile name given a string
     get_name() -> returns the profile's name as a string
     set_descriptor_vectors(list) -> sets profile's vector list given a list 
@@ -46,15 +46,15 @@ Create a Profile class with functionality to store face descriptors associated w
 
 Functionality to create, load, and save a database of profiles - dictionary(key=name, value=profile)
     Pickle code from last time
-        load_dictionary() -> load dict from pickle file     
-        save_dictionary() -> save dict to pickle file
+        (X) load_dictionary() -> load dict from pickle file     
+        (X) save_dictionary() -> save dict to pickle file
 
     Functionality to add and remove profiles
-        add_profile (profile, database) -> adds profile to database
-        remove_profile (profile, database) -> removes profile from database
+        (X) add_profile (profile, database) -> adds profile to database
+        (X) remove_profile (profile, database) -> removes profile from database
      
     Functionality to add an image to the database, given a name (create a new profile if the name isn’t in the database, otherwise add the image’s face descriptor vector to the proper profile)
-        add_image(name, image, database) -> gets dvectors for image and adds it to an existing profile or makes a new one
+        (X) add_image(name, image, database) -> gets dvectors for image and adds it to an existing profile or makes a new one
     
     Function to generate dvectors using resnet - [MINDY]
         -bound_image(image_data): pass in image data, use the MTCNN model to get: boxes, probabilities, landmarks
@@ -72,6 +72,7 @@ Functionality to create, load, and save a database of profiles - dictionary(key=
             cosine_distance(avgdvector, database_vector) -> returns cosine distance as float
 
     Functionality to get image data regardless of whether it is being stored in database or compared to the database - mindy + celine
+        (X) get_image() -> main function that implements camera/file image functions
         camera_image() -> prompts user for webcam image and returns image np.array
         file_image() -> prompts user for file image and returns image np.array
 Functionality to display an image with a box around detected faces with labels to indicate matches or an “Unknown” label otherwise 
