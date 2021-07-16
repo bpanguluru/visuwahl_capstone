@@ -158,19 +158,20 @@ def whispers(pictures):
         for j in range(i + 1, len(new_pictures)):
             pic1 = dvectors[i]
             pic2 = dvectors[j]
-            print(pic1.shape)
-            print(pic2.shape)
             dist = cosine_distance(pic1, pic2) # distance between dvectors of both imgs
             weight = 1 / (dist ** 2) #calculate weights from cosine distance between dvectors 
             adj[i][j] = weight
             adj[j][i] = weight
+            
+    print(adj)
     
     graph = [] #for storing the nodes
+    threshold = 30
     for i in range(len(new_pictures)): # iterate through each picture to create its own unique node 
         neighbors = [] # find the neighbors of each picture
         for j in range(len(new_pictures)):
-            if adj[i][j] != 0: # if there is an actual weight assigned to that edge, add the node's id as a neighbor
-                neighbors.append[i]
+            if adj[i][j] > threshold: # if there is an actual weight assigned to that edge, add the node's id as a neighbor
+                neighbors.append(i)
         node = Node(i, neighbors, dvectors[i]) # create a Node object from the picture
         graph.append(node) # add the node to the list of nodes
     
