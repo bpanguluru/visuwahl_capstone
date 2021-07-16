@@ -195,14 +195,10 @@ def bound_image(image_data):
 def vectorize_image(img, boxes):
     
 
-
-
-
-def graph(boxes,probabilities, landmarks):
+def graph(image_data, boxes,probabilities, landmarks):
     #display_output(image_input, labels, boxes, landmarks)
     fig, ax = plt.subplots()
-    ax.imshow(pic)
-
+    ax.imshow(image_data)
 
     for box, prob, landmark in zip(boxes, probabilities, landmarks):
         # draw the box on the screen
