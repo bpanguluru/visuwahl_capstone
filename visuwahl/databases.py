@@ -138,7 +138,7 @@ def add_profile(name, dvectors, database):
     None
 """
     # creates new key, value in dictionary/database
-    database[name] = [dvectors]
+    database[name] = Profile(name, dvectors)
 
 def remove_profile(name, database):
     """
@@ -186,7 +186,7 @@ def add_image(name, image, database):
     image_dvectors = vectorize_image(model, image, boxes)
     # if profile exists in database, add image
     if database.__contains__(name):
-        database[name].append(Profile(name, image_dvectors))
+        database[name].dvectors.extend(image_dvectors)
     # if profile doesnt exist yet, create it then add image
     else:
         add_profile(name, image_dvectors, database)
