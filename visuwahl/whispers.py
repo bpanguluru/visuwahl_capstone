@@ -1,8 +1,9 @@
+from .databases import file_image, bound_image, vectorize_image
+from facenet_models import FacenetModel # assume facenet_models is already installed in conda environment
 import networkx as nx
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import cv2
 import os
 
 
@@ -102,34 +103,45 @@ def files_to_data(folder_path):
     """
     Parameters
     --------
-    folder_path: string
-    path to folder of images 
+    folder_path: String
+        path to folder of images 
+    
     Returns
     -------
     pictures: list
-    List of np.ndarrays for each image in the folder image data
+    List of np.ndarrays for each image in the folder of images
     -----
     """
-    images = []
+    pictures = []
     for filename in os.listdir(folder_path):
-        
+        img = file_image(os.path.join(folder_path,filename))
+        if img is not None:
+            pictures.append(img)
+    return pictures 
+    
 
-
-def whispers():
+def whispers(pictures):
     """
     Parameters
     --------
     pictures: list
-    List of np.ndarrays of image data
+        List of np.ndarrays of image data
+    
     Returns
     -------
     graph: List[Node]
-    A list of the nodes in the graph.
-        Each element should be an instance of the `Node`-class.
+        A list of the nodes in the graph.
+            Each element should be an instance of the `Node`-class.
         
     adj: np.ndarray
-    2D array of cosine distances between every node
+        2D array of cosine distances between every node
     Notes
     -----
     """
+    dvectors = []
+    model = FacenetModel()
+    boxes, probs, landmarks = model.detect(img)
+    image_dvectors = vectorize_image(model, img, boxes) # extract descriptor vector of each face
+    for picture in pictures:
+        dvectors.append
     
