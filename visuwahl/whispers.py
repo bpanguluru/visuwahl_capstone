@@ -114,10 +114,13 @@ def files_to_data(folder_path):
     """
     pictures = []
     for filename in os.listdir(folder_path): # iterate through each image in the folder
-        img = file_image(os.path.join(folder_path,filename))
-        if img is not None: # if there is an image, add it to the pictures list
-            pictures.append(img)
-
+        try:
+            img = file_image(os.path.join(folder_path,filename))
+            if img is not None: # if there is an image, add it to the pictures list
+                pictures.append(img)
+        except ValueError:
+            print(filename)
+        
     return pictures 
     
 
@@ -155,6 +158,8 @@ def whispers(pictures):
         for j in range(i + 1, len(new_pictures)):
             pic1 = dvectors[i]
             pic2 = dvectors[j]
+            print(pic1.shape)
+            print(pic2.shape)
             dist = cosine_distance(pic1, pic2) # distance between dvectors of both imgs
             weight = 1 / (dist ** 2) #calculate weights from cosine distance between dvectors 
             adj[i][j] = weight
