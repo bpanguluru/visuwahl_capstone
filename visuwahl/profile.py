@@ -77,7 +77,7 @@ class Profile:
         """
         return self.dvectors
         
-    def get_average_dvector(self):
+    def get_avg_dvector(self):
         """
         Return profile's average dvector
 
