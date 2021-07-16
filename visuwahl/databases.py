@@ -1,8 +1,11 @@
 #pickling
 import pickle
-#import mygrad as mg
 from camera import take_picture
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import skimage.io as io
+from facenet_models import FacenetModel
+import numpy as np
 
 def file_image(path_to_image):
     # shape-(Height, Width, Color)
@@ -101,7 +104,7 @@ def add_profile(name, dvectors, database):
     None
 """
     # creates new key, value in dictionary/database
-    database[name] = [dvectors]
+    database[name] = dvectors
 
 def remove_profile(name, database):
     """
@@ -191,3 +194,21 @@ def bound_image(image_data):
     boxes, probabilities, landmarks = model.detect(image_data)
 def vectorize_image(img, boxes):
     
+
+
+
+
+def graph(boxes,probabilities, landmarks):
+    #display_output(image_input, labels, boxes, landmarks)
+    fig, ax = plt.subplots()
+    ax.imshow(pic)
+
+
+    for box, prob, landmark in zip(boxes, probabilities, landmarks):
+        # draw the box on the screen
+        ax.add_patch(Rectangle(box[:2], *(box[2:] - box[:2]), fill=None, lw=2, color="red"))
+
+        # Get the landmarks/parts for the face in box d.
+        # Draw the face landmarks on the screen.
+        for i in range(len(landmark)):
+            ax.plot(landmark[i, 0], landmark[i, 1], "+", color="blue")

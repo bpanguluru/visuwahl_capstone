@@ -73,9 +73,9 @@ Functionality to create, load, and save a database of profiles - dictionary(key=
 
     Functionality to get image data regardless of whether it is being stored in database or compared to the database - mindy + celine
         (X) get_image() -> main function that implements camera/file image functions
-        camera_image() -> prompts user for webcam image and returns image np.array
-        file_image() -> prompts user for file image and returns image np.array
-Functionality to display an image with a box around detected faces with labels to indicate matches or an “Unknown” label otherwise 
+        (X)camera_image() -> prompts user for webcam image and returns image np.array
+        (X)file_image() -> prompts user for file image and returns image np.array
+(X) Functionality to display an image with a box around detected faces with labels to indicate matches or an “Unknown” label otherwise 
     display_output(image_input, labels, boxes, landmarks)
         -display image with probs, labels, boxes, landmarks
 
