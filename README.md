@@ -57,19 +57,20 @@ Functionality to create, load, and save a database of profiles - dictionary(key=
         (X) add_image(name, image, database) -> gets dvectors for image and adds it to an existing profile or makes a new one
     
     Function to generate dvectors using resnet - [MINDY]
-        -bound_image(image_data): pass in image data, use the MTCNN model to get: boxes, probabilities, landmarks
+        -bound_image(img): pass in image data, use the MTCNN model to get: boxes, probabilities, landmarks
             -each of these are arrays length N, where N is the number of faces detected
         -vectorize_image(img, boxes): pass in image data and boxes, use the RESNET model to get descriptor vectors for each face in an image
 
     Functionality to find a match for a new face descriptor in the database, using a cutoff value - mindy + celine
-        find_match(face_descriptor, database, cutoff) -> returns name of guessed face as string (for one face)
-            -calls cosine_distance()
-            -check which cosine distance is least in the database
-            -if distance is less than cutoff, return name
+        def find_match(img, database, cutoff=1.0): takes in an image, detects faces within the image, and matches each face to the closest match in the profile database
             - calls bound_image and vectorize_image
+            - calls cosine_distance()
+            - check which cosine distance is least in the database
+            - if distance is less than cutoff, return name
+            - returns tuple of labels, boxes, probabilities, landmarks
         
         Function to measure cosine distance between face descriptors - work together with above (to know how database functions work) [CELINE]
-            cosine_distance(avgdvector, database_vector) -> returns cosine distance as float
+            cosine_distance(dvector, database_vector) -> returns cosine distance as float
 
     Functionality to get image data regardless of whether it is being stored in database or compared to the database - mindy + celine
         (X) get_image() -> main function that implements camera/file image functions

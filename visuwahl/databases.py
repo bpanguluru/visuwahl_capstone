@@ -1,5 +1,8 @@
 #pickling
 import pickle
+import mygrad as mg
+import numpy as np
+from facenet_models import FacenetModel # assume facenet_models is already installed in conda environment
 from camera import take_picture
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -14,7 +17,6 @@ def file_image(path_to_image):
         # Image is RGBA, where A is alpha -> transparency
         # Must make image RGB.
         image = image[..., :-1]  # png -> RGB
-
 
 def get_image():
     """
@@ -157,14 +159,15 @@ def add_image(name, image, database):
     else:
         add_profile(name, image_dvectors, database)
 
-def find_match(face_d_vec, database, cutoff=1.0):
+def find_match(img, database, cutoff=1.0):
     """
-    takes in the descriptor vector of the identified face from the inputted image 
-    and matches it to the closest match in the profile database
+    takes in an image, detects faces within the image,
+    and matches each face to the closest match in the profile database
     
     Parameters
     ---------
-    face_d_vec: np.array shape - (512,)
+    img: np.array
+        image to match to a label
 
     database: dictionary of Profiles
 
@@ -173,28 +176,110 @@ def find_match(face_d_vec, database, cutoff=1.0):
         
     Returns
     ------
-    string
-        name associated with match found
+    np.array[list[string], list[], list[], list[]]
+        names associated with match found
 
     Notes
     -----
-    returns None if no match below cutoff is found
+    tuple(labels, boxes, probabilites, landmarks - shape(4,))
+        tuple of (labels, boxes, probabilities, landmarks)
     """
-    
+    labels = []
+    boxes, probabilities, landmarks = bound_image(img) # box all faces
+    image_dvectors = vectorize_image(img, boxes) # extract descriptor vector of each face
+    for vec in image_dvectors:   # loop through each face identified in the image
+        dists = {} # dists = [dist : <label>] make a new dictionary matching cosine distances to labels
+        # database = {str <name>:Profile prof}
+        # Profile -> str name, List[np.array] d_vectors
+        for prof in database.values(): # loop through all the descriptor vectors in our dtaabase and compare
+            dist = cosine_distance(vec, prof.get_avg_d_vector()) # find cosine distance between each profile and the face descriptor vector
+            if dist < cutoff:
+                dists[dist] = prof.get_name() # add distance and label to dists dictionary
 
-def bound_image(image_data):
+        label = 'Unknown' # assume label will be 'Unknown'
+        if len(dists) > 0: # if the dictionary is not empty - indicates that there will be an actual label
+            min_dist = min(list(dists.keys())) # find the minimum distance from the list of keys from dists
+            label = dists[min_dist] # find the new label with the minimum distance
+        
+        labels.append(label) # append the label to the labels list
+
+    return labels, boxes, probabilities, landmarks # return tuple of information including a label for each of the N faces in the iamge
+
+def bound_image(img):
     """
+    boxes all of the identified faces in the image using the face_net model MTCNN (multi-task cascaded neural network)
+    Parameters
+    ---------
+    img: np.array - shape(?)
+        input image for model to detect faces
+    
+    Returns
+    ------
+    tuple(boxes, probabilites, landmarks - shape(3,))
+        tuple of (boxes, probabilities, landmarks) given the N faces identified in the image
+    
+    """
+    # this will download the pretrained weights for MTCNN and resnet
+    # (if they haven't already been fetched)
+    # which should take just a few seconds
+    model = FacenetModel()
+    
+    # detect all faces in an image
+    # returns a tuple of (boxes, probabilities, landmarks)
+    # assumes ``pic`` is a numpy array of shape (R, C, 3) (RGB is the last dimension)
+    # If N faces are detected then arrays of N boxes, N probabilities, and N landmark-sets are returned.
+    return model.detect(img)
+
+    
+def vectorize_image(img, boxes):
+    """
+    calculates the description vector for each of the uniquely identified faces (boxes)
+    in the inputted image using the provided function in the RESNET face_net model
 
     Parameters
     ---------
+    img: np.array(?)
+        image inputted by user
+
+    boxes: list[]
+        box locations for each face in the inputted image
 
     Returns
     ------
+    list[np.array - shape (N, 512)]
+        list of descriptor vectors for each of the N boxed faces in the image
     """
-    boxes, probabilities, landmarks = model.detect(image_data)
-def vectorize_image(img, boxes):
-    
+    # this will download the pretrained weights for MTCNN and resnet
+    # (if they haven't already been fetched)
+    # which should take just a few seconds
+    model = FacenetModel()
 
+    # Crops the image once for each of the N bounding boxes
+    # and produces a shape-(512,) descriptor for that face.
+    #
+    # If N bounding boxes were supplied, then a shape-(N, 512)
+    # array is returned, corresponding to N descriptor vectors
+    return model.compute_descriptors(img, boxes)
+
+def cosine_distance(dvector, database_vector):
+    """
+    computes the cosine distance between two descriptor vectors
+
+    Parameters
+    ---------
+    dvector: np.array() - shape: (512,)
+        descriptor vector
+    database_vector: np.array() - shape: (512,)
+        descriptor vector
+
+    Returns
+    ------
+    float
+        cosine distance between vectors
+    """
+    return np.dot(dvector, database_vector)/(np.linalg.norm(dvector) * np.linalg.norm(database_vector))
+    
+    
 def graph(image_data, boxes,probabilities, landmarks):
     #display_output(image_input, labels, boxes, landmarks)
     fig, ax = plt.subplots()
