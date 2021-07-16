@@ -114,10 +114,13 @@ def files_to_data(folder_path):
     """
     pictures = []
     for filename in os.listdir(folder_path): # iterate through each image in the folder
-        img = file_image(os.path.join(folder_path,filename))
-        if img is not None: # if there is an image, add it to the pictures list
-            pictures.append(img)
-
+        try:
+            img = file_image(os.path.join(folder_path,filename))
+            if img is not None: # if there is an image, add it to the pictures list
+                pictures.append(img)
+        except ValueError:
+            print(filename)
+        
     return pictures 
     
 
