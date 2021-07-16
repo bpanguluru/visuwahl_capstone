@@ -7,7 +7,7 @@ from camera import take_picture
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import skimage.io as io
-import pathlib
+#import pathlib
 import numpy as np
 
 def initialize_database():
@@ -66,8 +66,8 @@ def get_image():
     # Image File
     if image_type == 0:
         file_path = input("Enter the file path and file name to the dictionary: ")
-        p = pathlib.Path(file_path)
-        file_path = str(p.absolute())
+        # p = pathlib.Path(file_path)
+        # file_path = str(p.absolute())
         
         image = file_image(file_path) 
     # Webcamera Sample
@@ -182,7 +182,7 @@ def add_image(name, image, database):
     None
     """
     # calculate dvectors from image data
-    boxes, probabilities, landmarks = bound_image(image)
+    model, boxes, probabilities, landmarks = bound_image(image) 
     image_dvectors = vectorize_image(image, boxes)
     # if profile exists in database, add image
     if database.__contains__(name):
