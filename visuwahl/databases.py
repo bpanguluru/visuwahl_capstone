@@ -7,7 +7,7 @@ from camera import take_picture
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import skimage.io as io
-import pathlib 
+import pathlib
 import numpy as np
 
 def initialize_database():
@@ -40,11 +40,12 @@ def initialize_database():
 def file_image(path_to_image):
     # shape-(Height, Width, Color)
     image = io.imread(str(path_to_image))
-    print(image)
     if image.shape[-1] == 4:
         # Image is RGBA, where A is alpha -> transparency
         # Must make image RGB.
-        image = image[..., :-1]  # png -> RGB
+        return image[..., :-1]  # png -> RGB
+    else:
+        return image
 
 def get_image():
     """
@@ -64,10 +65,11 @@ def get_image():
     image_type = int(input("Enter 0 to load an image file, Enter 1 to take a picture with your webcam: "))
     # Image File
     if image_type == 0:
-        filename = input("What's the name of the desired image file? (Include file path and extension): ")  #there's an issue with loading files in
+        file_path = input("Enter the file path and file name to the dictionary: ")
+        p = pathlib.Path(file_path)
+        file_path = str(p.absolute())
         
-        print(filename)
-        image = file_image(filename) 
+        image = file_image(file_path) 
     # Webcamera Sample
     elif image_type == 1:
         image = take_picture()
