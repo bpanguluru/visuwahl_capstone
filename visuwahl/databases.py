@@ -7,7 +7,6 @@ from camera import take_picture
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import skimage.io as io
-from facenet_models import FacenetModel
 import numpy as np
 
 def file_image(path_to_image):
@@ -37,7 +36,7 @@ def get_image():
     # Image File
     if image_type == 0:
         filename = input("What's the name of the desired image file? (Include file path and extension): ")
-        image = file_image(filename) # file_image() will have to take in a filepath as a string and convert with pathlib to actually use the image file
+        image = file_image(filename) 
     # Webcamera Sample
     elif image_type == 1:
         image = take_picture()
@@ -185,8 +184,8 @@ def find_match(img, database, cutoff=1.0):
         tuple of (labels, boxes, probabilities, landmarks)
     """
     labels = []
-    boxes, probabilities, landmarks = bound_image(img) # box all faces
-    image_dvectors = vectorize_image(img, boxes) # extract descriptor vector of each face
+    model, boxes, probabilities, landmarks = bound_image(img) # box all faces
+    image_dvectors = vectorize_image(model, img, boxes) # extract descriptor vector of each face
     for vec in image_dvectors:   # loop through each face identified in the image
         dists = {} # dists = [dist : <label>] make a new dictionary matching cosine distances to labels
         # database = {str <name>:Profile prof}
@@ -215,8 +214,8 @@ def bound_image(img):
     
     Returns
     ------
-    tuple(boxes, probabilites, landmarks - shape(3,))
-        tuple of (boxes, probabilities, landmarks) given the N faces identified in the image
+    Tuple(model, Tuple(boxes, probabilities, landmarks)) 
+        given the N faces identified in the image
     
     """
     # this will download the pretrained weights for MTCNN and resnet
@@ -228,16 +227,21 @@ def bound_image(img):
     # returns a tuple of (boxes, probabilities, landmarks)
     # assumes ``pic`` is a numpy array of shape (R, C, 3) (RGB is the last dimension)
     # If N faces are detected then arrays of N boxes, N probabilities, and N landmark-sets are returned.
-    return model.detect(img)
+    boxes, probs, landmarks = model.detect(img)
+    
+    return model, boxes, probs, landmarks
 
     
-def vectorize_image(img, boxes):
+def vectorize_image(model, img, boxes):
     """
     calculates the description vector for each of the uniquely identified faces (boxes)
     in the inputted image using the provided function in the RESNET face_net model
 
     Parameters
     ---------
+    model: RESNET model
+        RESNET model from face_net initialized in bound_image
+        
     img: np.array(?)
         image inputted by user
 
@@ -249,10 +253,6 @@ def vectorize_image(img, boxes):
     list[np.array - shape (N, 512)]
         list of descriptor vectors for each of the N boxed faces in the image
     """
-    # this will download the pretrained weights for MTCNN and resnet
-    # (if they haven't already been fetched)
-    # which should take just a few seconds
-    model = FacenetModel()
 
     # Crops the image once for each of the N bounding boxes
     # and produces a shape-(512,) descriptor for that face.
@@ -277,11 +277,24 @@ def cosine_distance(dvector, database_vector):
     float
         cosine distance between vectors
     """
-    return np.dot(dvector, database_vector)/(np.linalg.norm(dvector) * np.linalg.norm(database_vector))
+    return (dvector@database_vector)/(np.linalg.norm(dvector, axis=1, keepdims=True)*np.linalg.norm(database_vector, axis=1, keepdims=True))
     
     
-def graph(image_data, boxes,probabilities, landmarks):
-    #display_output(image_input, labels, boxes, landmarks)
+def graph(image_data, boxes, probabilities, landmarks):
+    """
+    graphs boxed images with landmarks and probabilities
+
+    Parameters
+    ---------
+    image_data : 3D numpy array
+
+    boxes, probabilities, landmarks : from bound_image() 
+
+    Returns
+    ------
+    None
+    """
+    # display_output(image_input, labels, boxes, landmarks)
     fig, ax = plt.subplots()
     ax.imshow(image_data)
 
