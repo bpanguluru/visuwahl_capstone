@@ -9,7 +9,7 @@ from matplotlib.patches import Rectangle
 import skimage.io as io
 #import pathlib
 import numpy as np
-
+from profile import *
 def initialize_database():
     """
     Initalizes a dictionary database 
@@ -311,7 +311,12 @@ def cosine_distance(dvector, database_vector):
     float
         cosine distance between vectors
     """
-    return (dvector@database_vector)/(np.linalg.norm(dvector, axis=1, keepdims=True)*np.linalg.norm(database_vector, axis=1, keepdims=True))
+    #(dvector@database_vector)/*np.linalg.norm(database_vector, axis=1, keepdims=True))
+    
+    x = dvector / (np.linalg.norm(dvector, axis=1, keepdims=True)
+    y = database_vector / np.linalg.norm(database_vector, axis=1, keepdims=True))
+    
+    return 1 - (x @ y.T)
     
     
 def graph(image_data, boxes, probabilities, landmarks):
