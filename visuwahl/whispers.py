@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import os
+import random
 
 
 class Node:
@@ -52,7 +53,8 @@ class Node:
 
 
 def plot_graph(graph, adj):
-    """ Use the package networkx to produce a diagrammatic plot of the graph, with
+    """ 
+    Use the package networkx to produce a diagrammatic plot of the graph, with
     the nodes in the graph colored according to their current labels.
     Note that only 20 unique colors are available for the current color map,
     so common colors across nodes may be coincidental.
@@ -101,6 +103,7 @@ def plot_graph(graph, adj):
 
 def files_to_data(folder_path):
     """
+
     Parameters
     --------
     folder_path: String
@@ -124,8 +127,9 @@ def files_to_data(folder_path):
     return pictures 
     
 
-def whispers(pictures, threshold=0):
+def whispers(pictures, threshold=0, max_iters=100):
     """
+
     Parameters
     --------
     pictures: list
@@ -172,5 +176,31 @@ def whispers(pictures, threshold=0):
                 neighbors.append(i)
         node = Node(i, neighbors, dvectors[i]) # create a Node object from the picture
         graph.append(node) # add the node to the list of nodes
+
+    clusters(graph, adj, max_iters)
     
     return tuple(graph), adj
+
+def clusters(graph, adj, max_iters):
+    """
+
+    Parameters
+    --------
+    graph: list
+        A list of the nodes in the graph.
+            Each element should be an instance of the `Node`-class.
+
+    adj: np.ndarray
+        2D array of cosine distances between every node
+
+    max_iters: integer
+        An integer for the max number of iterations of the algorithm
+    
+    Returns
+    -------
+    
+    Notes
+    -----
+    """
+    for i in range(max_iters):
+        n = int(random() * len(graph))

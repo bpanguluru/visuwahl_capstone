@@ -60,7 +60,7 @@ import visuwahl as vw
     (X) Functionality to display an image with a box around detected faces with labels to indicate matches or an “Unknown” label otherwise 
         (x) graph(image_input, labels, boxes, landmarks) -display image with probs, labels, boxes, landmarks
 
-    (X) Functionality to get image data regardless of whether it is being stored in database or compared to the database - mindy + celine
+    (X) [TESTED] Functionality to get image data regardless of whether it is being stored in database or compared to the database - mindy + celine
         (X) get_image() -> main function that implements file_image and camera function take_picture
         (X) file_image() -> prompts user for file image and returns image np.array
 

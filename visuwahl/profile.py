@@ -89,7 +89,9 @@ class Profile:
         -------
         average dvector : list
         """
-        return np.mean(self.dvectors)
+        mean = np.mean(self.dvectors, axis = 0)
+        print(mean.size)
+        return mean 
         
     def add_dvector(self, new_dvector):
         """

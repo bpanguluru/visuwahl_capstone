@@ -185,9 +185,9 @@ def add_image(name, image, database):
     # calculate dvectors from image data
     model, boxes, probabilities, landmarks = bound_image(image) 
     image_dvectors = vectorize_image(model, image, boxes)
-    # if profile exists in database, add image
+    # if profile exists in database, add image 
     if database.__contains__(name):
-        database[name].dvectors.extend(image_dvectors)
+        database[name].add_dvector(image)
     # if profile doesnt exist yet, create it then add image
     else:
         add_profile(name, image_dvectors, database)
@@ -313,14 +313,15 @@ def cosine_distance(dvector, database_vector):
         cosine distance between vectors
     """
     #(dvector@database_vector)/*np.linalg.norm(database_vector, axis=1, keepdims=True))
-    
-    x = dvector / (np.linalg.norm(dvector, axis=1, keepdims=True))
-    y = database_vector / np.linalg.norm(database_vector, axis=1, keepdims=True)
-    
+    print(dvector.shape)
+    print(database_vector.shape)
+    x = dvector / (np.linalg.norm(dvector, axis=None, keepdims=True))
+    y = database_vector / np.linalg.norm(database_vector, axis=None, keepdims=True)
+    print(x.shape, y.shape)
     return 1 - (x @ y.T)
     
     
-def graph(image_data, boxes, probabilities, landmarks):
+def graph(labels,image_data, boxes, probabilities, landmarks):
     """
     graphs boxed images with landmarks and probabilities
 
@@ -338,11 +339,19 @@ def graph(image_data, boxes, probabilities, landmarks):
     fig, ax = plt.subplots()
     ax.imshow(image_data)
 
-    for box, prob, landmark in zip(boxes, probabilities, landmarks):
+    for label, box, prob, landmark in zip(labels, boxes, probabilities, landmarks):
         # draw the box on the screen
         ax.add_patch(Rectangle(box[:2], *(box[2:] - box[:2]), fill=None, lw=2, color="red"))
-
+        if labels is not None:
+            plt.text(
+                boxes[0][0], boxes[0][1], labels, fontsize=15, color="green"
+            )
+        if probabilities is not None:
+            plt.text(
+                boxes[0][0], boxes[0][1], probabilities, fontsize=10, color="red"
+            )
         # Get the landmarks/parts for the face in box d.
         # Draw the face landmarks on the screen.
         for i in range(len(landmark)):
             ax.plot(landmark[i, 0], landmark[i, 1], "+", color="blue")
+        
