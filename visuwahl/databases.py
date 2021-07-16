@@ -138,7 +138,7 @@ def add_profile(name, dvectors, database):
     None
 """
     # creates new key, value in dictionary/database
-    database[name] = dvectors
+    database[name] = [dvectors]
 
 def remove_profile(name, database):
     """
@@ -219,12 +219,13 @@ def find_match(img, database, cutoff=1.0):
     labels = []
     model, boxes, probabilities, landmarks = bound_image(img) # box all faces
     image_dvectors = vectorize_image(model, img, boxes) # extract descriptor vector of each face
+    
     for vec in image_dvectors:   # loop through each face identified in the image
         dists = {} # dists = [dist : <label>] make a new dictionary matching cosine distances to labels
         # database = {str <name>:Profile prof}
         # Profile -> str name, List[np.array] d_vectors
         for prof in database.values(): # loop through all the descriptor vectors in our dtaabase and compare
-            dist = cosine_distance(vec, prof.get_avg_d_vector()) # find cosine distance between each profile and the face descriptor vector
+            dist = cosine_distance(vec, prof.get_avg_dvector()) # find cosine distance between each profile and the face descriptor vector
             if dist < cutoff:
                 dists[dist] = prof.get_name() # add distance and label to dists dictionary
 
@@ -292,7 +293,7 @@ def vectorize_image(model, img, boxes):
     #
     # If N bounding boxes were supplied, then a shape-(N, 512)
     # array is returned, corresponding to N descriptor vectors
-    return model.compute_descriptors(img, boxes)
+    return list(model.compute_descriptors(img, boxes))
 
 def cosine_distance(dvector, database_vector):
     """
