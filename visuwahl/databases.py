@@ -314,7 +314,7 @@ def cosine_distance(dvector, database_vector):
     """
     #(dvector@database_vector)/*np.linalg.norm(database_vector, axis=1, keepdims=True))
     
-    x = dvector / (np.linalg.norm(dvector, axis=1, keepdims=True)
+    x = dvector / (np.linalg.norm(dvector, axis=1, keepdims=True))
     y = database_vector / np.linalg.norm(database_vector, axis=1, keepdims=True)
     
     return 1 - (x @ y.T)
