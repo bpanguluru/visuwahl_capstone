@@ -1,4 +1,4 @@
-from .databases import file_image, bound_image, vectorize_image
+from .databases import file_image, bound_image, vectorize_image, cosine_distance
 from facenet_models import FacenetModel # assume facenet_models is already installed in conda environment
 import networkx as nx
 import numpy as np
@@ -113,10 +113,11 @@ def files_to_data(folder_path):
     -----
     """
     pictures = []
-    for filename in os.listdir(folder_path):
+    for filename in os.listdir(folder_path): # iterate through each image in the folder
         img = file_image(os.path.join(folder_path,filename))
-        if img is not None:
+        if img is not None: # if there is an image, add it to the pictures list
             pictures.append(img)
+
     return pictures 
     
 
@@ -129,8 +130,8 @@ def whispers(pictures):
     
     Returns
     -------
-    graph: List[Node]
-        A list of the nodes in the graph.
+    graph: Tuple[Node]
+        A tuple of the nodes in the graph.
             Each element should be an instance of the `Node`-class.
         
     adj: np.ndarray
@@ -139,9 +140,33 @@ def whispers(pictures):
     -----
     """
     dvectors = []
+    new_pictures = [] #images with only one face detected
     model = FacenetModel()
-    boxes, probs, landmarks = model.detect(img)
-    image_dvectors = vectorize_image(model, img, boxes) # extract descriptor vector of each face
-    for picture in pictures:
-        dvectors.append
+    for pic in pictures:   
+        boxes, probs, landmarks = model.detect(pic) 
+        image_dvectors = vectorize_image(model, pic, boxes) # extract descriptor vector of each face
+        if len(image_dvectors) == 1: # check if there is 1 face detected only
+            dvectors.append(image_dvectors)
+            new_pictures.append(pic)
     
+    adj = np.zeros((len(new_pictures), len(new_pictures)))
+
+    for i in range(len(new_pictures)): # runs through half of the adj matrix (weights are symmetrical across the diagonal)
+        for j in range(i + 1, len(new_pictures)):
+            pic1 = dvectors[i]
+            pic2 = dvectors[j]
+            dist = cosine_distance(pic1, pic2) # distance between dvectors of both imgs
+            weight = 1 / (dist ** 2) #calculate weights from cosine distance between dvectors 
+            adj[i][j] = weight
+            adj[j][i] = weight
+    
+    graph = [] #for storing the nodes
+    for i in range(len(new_pictures)): # iterate through each picture to create its own unique node 
+        neighbors = [] # find the neighbors of each picture
+        for j in range(len(new_pictures)):
+            if adj[i][j] != 0: # if there is an actual weight assigned to that edge, add the node's id as a neighbor
+                neighbors.append[i]
+        node = Node(i, neighbors, dvectors[i]) # create a Node object from the picture
+        graph.append(node) # add the node to the list of nodes
+    
+    return tuple(graph), adj

@@ -1,6 +1,6 @@
 # remember to import package in jupyter notebook
 
-from visuwahl.databases import *
+from .databases import *
 # initialize dictionaries <-- handled by user
 
 

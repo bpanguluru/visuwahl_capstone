@@ -7,11 +7,40 @@ from camera import take_picture
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import skimage.io as io
+import pathlib 
 import numpy as np
+
+def initialize_database():
+    """
+    Initalizes a dictionary database 
+
+    Parameters
+    ----------
+    None
+    
+    Returns
+    ------
+    database : dict
+        initialized database
+    """
+    database = {}
+    dictionary_type = int(input("Enter 0 to input a pickled dictionary, Enter 1 to have it initialized: "))
+    # Pickled Dictionary
+    if dictionary_type == 0:
+        file_path = input("Enter the file path and file name to the dictionary: ")
+        database = load_dictionary(file_path)
+    # We initialized 
+    elif dictionary_type == 1:
+        pass
+    # Invalid Option
+    else:
+        print("Error: Invalid Option") 
+    return database
 
 def file_image(path_to_image):
     # shape-(Height, Width, Color)
     image = io.imread(str(path_to_image))
+    print(image)
     if image.shape[-1] == 4:
         # Image is RGBA, where A is alpha -> transparency
         # Must make image RGB.
@@ -35,7 +64,9 @@ def get_image():
     image_type = int(input("Enter 0 to load an image file, Enter 1 to take a picture with your webcam: "))
     # Image File
     if image_type == 0:
-        filename = input("What's the name of the desired image file? (Include file path and extension): ")
+        filename = input("What's the name of the desired image file? (Include file path and extension): ")  #there's an issue with loading files in
+        
+        print(filename)
         image = file_image(filename) 
     # Webcamera Sample
     elif image_type == 1:
