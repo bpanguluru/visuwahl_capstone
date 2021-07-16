@@ -183,7 +183,7 @@ def add_image(name, image, database):
     """
     # calculate dvectors from image data
     model, boxes, probabilities, landmarks = bound_image(image) 
-    image_dvectors = vectorize_image(image, boxes)
+    image_dvectors = vectorize_image(model, image, boxes)
     # if profile exists in database, add image
     if database.__contains__(name):
         database[name].apppend(image_dvectors)
